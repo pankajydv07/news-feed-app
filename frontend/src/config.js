@@ -2,7 +2,7 @@
 // Configuration variables for the application
 
 // API URL - Dynamically set based on environment
-export const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+export const API_URL = 'https://backend-production-5ff3.up.railway.app/api';
 
 // Socket connection path
 export const SOCKET_PATH = '/socket.io';

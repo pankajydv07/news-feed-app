@@ -1,0 +1,649 @@
+
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "News Feed API",
+      "description": "API for Real-Time News Feed Application",
+      "version": "1.0.0"
+    },
+    "servers": [
+      {
+        "url": "http://localhost:5000/api",
+        "description": "Development server"
+      }
+    ],
+    "tags": [
+      {
+        "name": "News",
+        "description": "News operations"
+      },
+      {
+        "name": "Categories",
+        "description": "Category operations"
+      },
+      {
+        "name": "Users",
+        "description": "User operations"
+      }
+    ],
+    "paths": {
+      "/news": {
+        "get": {
+          "tags": ["News"],
+          "summary": "Get all news with pagination",
+          "parameters": [
+            {
+              "in": "query",
+              "name": "page",
+              "schema": {
+                "type": "integer",
+                "default": 1
+              },
+              "description": "Page number"
+            },
+            {
+              "in": "query",
+              "name": "limit",
+              "schema": {
+                "type": "integer",
+                "default": 10
+              },
+              "description": "Number of items per page"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean"
+                      },
+                      "count": {
+                        "type": "integer"
+                      },
+                      "total": {
+                        "type": "integer"
+                      },
+                      "totalPages": {
+                        "type": "integer"
+                      },
+                      "currentPage": {
+                        "type": "integer"
+                      },
+                      "data": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/News"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error"
+            }
+          }
+        },
+        "post": {
+          "tags": ["News"],
+          "summary": "Create a new news item",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NewsInput"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "News created successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean"
+                      },
+                      "data": {
+                        "$ref": "#/components/schemas/News"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid input"
+            },
+            "500": {
+              "description": "Server error"
+            }
+          }
+        }
+      },
+      "/news/trending": {
+        "get": {
+          "tags": ["News"],
+          "summary": "Get trending news",
+          "parameters": [
+            {
+              "in": "query",
+              "name": "limit",
+              "schema": {
+                "type": "integer",
+                "default": 5
+              },
+              "description": "Number of trending news items to return"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean"
+                      },
+                      "count": {
+                        "type": "integer"
+                      },
+                      "data": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/News"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error"
+            }
+          }
+        }
+      },
+      "/news/category/{category}": {
+        "get": {
+          "tags": ["News"],
+          "summary": "Get news by category",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "category",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "enum": ["Tech", "Business", "Sports", "Entertainment", "Science", "Health"]
+              },
+              "description": "Category name"
+            },
+            {
+              "in": "query",
+              "name": "page",
+              "schema": {
+                "type": "integer",
+                "default": 1
+              },
+              "description": "Page number"
+            },
+            {
+              "in": "query",
+              "name": "limit",
+              "schema": {
+                "type": "integer",
+                "default": 10
+              },
+              "description": "Number of items per page"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean"
+                      },
+                      "count": {
+                        "type": "integer"
+                      },
+                      "total": {
+                        "type": "integer"
+                      },
+                      "totalPages": {
+                        "type": "integer"
+                      },
+                      "currentPage": {
+                        "type": "integer"
+                      },
+                      "data": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/News"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error"
+            }
+          }
+        }
+      },
+      "/news/{id}/view": {
+        "patch": {
+          "tags": ["News"],
+          "summary": "Increment view count for a news item",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "News ID"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "View count updated successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean"
+                      },
+                      "data": {
+                        "$ref": "#/components/schemas/News"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "News not found"
+            },
+            "500": {
+              "description": "Server error"
+            }
+          }
+        }
+      },
+      "/news/{id}/like": {
+        "patch": {
+          "tags": ["News"],
+          "summary": "Increment like count for a news item",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "News ID"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Like count updated successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean"
+                      },
+                      "data": {
+                        "$ref": "#/components/schemas/News"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "News not found"
+            },
+            "500": {
+              "description": "Server error"
+            }
+          }
+        }
+      },
+      "/categories": {
+        "get": {
+          "tags": ["Categories"],
+          "summary": "Get all available categories",
+          "responses": {
+            "200": {
+              "description": "Successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean"
+                      },
+                      "data": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error"
+            }
+          }
+        }
+      },
+      "/users": {
+        "post": {
+          "tags": ["Users"],
+          "summary": "Create or update a user",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInput"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "User created or updated successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean"
+                      },
+                      "data": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid input"
+            },
+            "500": {
+              "description": "Server error"
+            }
+          }
+        }
+      },
+      "/users/{email}": {
+        "get": {
+          "tags": ["Users"],
+          "summary": "Get user by email",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "email",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "User email"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean"
+                      },
+                      "data": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "User not found"
+            },
+            "500": {
+              "description": "Server error"
+            }
+          }
+        }
+      },
+      "/users/{email}/subscriptions": {
+        "patch": {
+          "tags": ["Users"],
+          "summary": "Update user subscriptions",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "email",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "User email"
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "subscribedCategories": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": ["Tech", "Business", "Sports", "Entertainment", "Science", "Health"]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Subscriptions updated successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean"
+                      },
+                      "data": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid input"
+            },
+            "404": {
+              "description": "User not found"
+            },
+            "500": {
+              "description": "Server error"
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "News": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "content": {
+              "type": "string"
+            },
+            "summary": {
+              "type": "string"
+            },
+            "category": {
+              "type": "string",
+              "enum": ["Tech", "Business", "Sports", "Entertainment", "Science", "Health"]
+            },
+            "source": {
+              "type": "string"
+            },
+            "author": {
+              "type": "string"
+            },
+            "imageUrl": {
+              "type": "string"
+            },
+            "views": {
+              "type": "integer"
+            },
+            "likes": {
+              "type": "integer"
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "NewsInput": {
+          "type": "object",
+          "required": ["title", "content", "summary", "category", "source", "author"],
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "content": {
+              "type": "string"
+            },
+            "summary": {
+              "type": "string"
+            },
+            "category": {
+              "type": "string",
+              "enum": ["Tech", "Business", "Sports", "Entertainment", "Science", "Health"]
+            },
+            "source": {
+              "type": "string"
+            },
+            "author": {
+              "type": "string"
+            },
+            "imageUrl": {
+              "type": "string"
+            }
+          }
+        },
+        "User": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string"
+            },
+            "username": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "subscribedCategories": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["Tech", "Business", "Sports", "Entertainment", "Science", "Health"]
+              }
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "UserInput": {
+          "type": "object",
+          "required": ["email", "username"],
+          "properties": {
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "username": {
+              "type": "string"
+            },
+            "subscribedCategories": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["Tech", "Business", "Sports", "Entertainment", "Science", "Health"]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
